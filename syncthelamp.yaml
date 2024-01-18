@@ -18,7 +18,7 @@ blueprint:
       selector:
         entity:
           multiple: false
-  source_url: https://gist.github.com/fireboy1919/997c80db37de30da76f67c5daeaba27b
+  #source_url: https://gist.github.com/fireboy1919/997c80db37de30da76f67c5daeaba27b
 mode: restart
 max_exceeded: silent
 variables:
