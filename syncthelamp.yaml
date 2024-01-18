@@ -1,3 +1,49 @@
+blueprint:
+  name: Synchronize br and temp
+  description: Synchronize the on/off state, brightness, and color temperature of 3 entities
+  domain: automation
+  input:
+    entity_1:
+      name: First entity
+      selector:
+        entity:
+          multiple: false
+    entity_2:
+      name: Second entity
+      selector:
+        entity:
+          multiple: false
+    entity_3:
+      name: Third entity
+      selector:
+        entity:
+          multiple: false
+  source_url: https://gist.github.com/fireboy1919/997c80db37de30da76f67c5daeaba27b
+mode: restart
+max_exceeded: silent
+variables:
+  entity_1: !input entity_1
+  entity_2: !input entity_2
+  entity_3: !input entity_3
+trigger:
+  - platform: state
+    entity_id: 
+      - !input entity_1
+      - !input entity_2
+      - !input entity_3
+  - platform: state
+    entity_id: 
+      - !input entity_1
+      - !input entity_2
+      - !input entity_3
+    attribute: brightness
+  - platform: state
+    entity_id: 
+      - !input entity_1
+      - !input entity_2
+      - !input entity_3
+    attribute: color_temp
+condition: []
 action:
   - choose:
       - conditions:
