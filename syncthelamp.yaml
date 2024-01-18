@@ -32,15 +32,24 @@ trigger:
   entity_id: !input entity_1
   attribute: brightness
 - platform: state
+  entity_id: !input entity_1
+  attribute: color_temp_kelvin
+- platform: state
   entity_id: !input entity_2
 - platform: state
   entity_id: !input entity_2
   attribute: brightness
 - platform: state
+  entity_id: !input entity_2
+  attribute: color_temp_kelvin
+- platform: state
   entity_id: !input entity_3
 - platform: state
   entity_id: !input entity_3
   attribute: brightness
+- platform: state
+  entity_id: !input entity_3
+  attribute: color_temp_kelvin
 condition: []
 action:
 - choose:
@@ -51,6 +60,7 @@ action:
     - service: light.turn_on
       data:
         brightness: '{{ state_attr(trigger.to_state.entity_id, "brightness") }}'
+        color_temp: '{{ state_attr(trigger.to_state.entity_id, "color_temp_kelvin") }}'
         entity_id: >-
           {% if trigger.from_state.entity_id == entity_1 %} {{ entity_2 }}
           {% elif trigger.from_state.entity_id == entity_2 %} {{ entity_3 }}
