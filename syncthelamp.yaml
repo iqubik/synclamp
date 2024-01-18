@@ -1,0 +1,76 @@
+blueprint:
+  name: Synchronize brightness and color temperature states
+  description: Synchronize the on/off state, brightness, and color temperature of 3 entities
+  domain: automation
+  input:
+    entity_1:
+      name: First entity
+      selector:
+        entity:
+          multiple: false
+    entity_2:
+      name: Second entity
+      selector:
+        entity:
+          multiple: false
+    entity_3:
+      name: Third entity
+      selector:
+        entity:
+          multiple: false
+    sync_color_temp:
+      name: Synchronize Color Temperature
+      description: Enable color temperature synchronization
+      default: true
+  source_url: https://gist.github.com/fireboy1919/997c80db37de30da76f67c5daeaba27b
+mode: restart
+max_exceeded: silent
+variables:
+  entity_1: !input entity_1
+  entity_2: !input entity_2
+  entity_3: !input entity_3
+trigger:
+- platform: state
+  entity_id: !input entity_1
+- platform: state
+  entity_id: !input entity_1
+  attribute: brightness
+- platform: state
+  entity_id: !input entity_2
+- platform: state
+  entity_id: !input entity_2
+  attribute: brightness
+- platform: state
+  entity_id: !input entity_3
+- platform: state
+  entity_id: !input entity_3
+  attribute: brightness
+- platform: state
+  entity_id: !input entity_1
+  attribute: color_temp_kelvin
+- platform: state
+  entity_id: !input entity_2
+  attribute: color_temp_kelvin
+- platform: state
+  entity_id: !input entity_3
+  attribute: color_temp_kelvin
+condition: []
+action:
+- choose:
+  - conditions:
+      condition: template
+      value_template: '{{ is_state(trigger.to_state.entity_id, ''on'') }}'
+    sequence:
+    - service: light.turn_on
+      data:
+        brightness: '{{ state_attr(trigger.to_state.entity_id, "brightness") }}'
+        color_temp: '{{ state_attr(trigger.to_state.entity_id, "color_temp_kelvin") if
+          trigger.to_state.attributes.color_temp_kelvin is defined and trigger.to_state.attributes.color_temp_kelvin
+          is not none else state_attr(trigger.to_state.entity_id, "color_temp") }}'
+        entity_id: '{% if trigger.from_state.entity_id == entity_1 %} {{ entity_2
+          }} {% elif trigger.from_state.entity_id == entity_2 %} {{ entity_1 }} {% else %} {{ entity_3 }} {% endif %}'
+  default:
+  - service: light.turn_off
+    target:
+      entity_id: '{% if trigger.from_state.entity_id == entity_1 %} {{ entity_2
+        }} {% elif trigger.from_state.entity_id == entity_2 %} {{ entity_1 }} {% else %} {{ entity_3 }} {% endif %}'
